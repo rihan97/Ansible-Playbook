@@ -1,0 +1,77 @@
+-
+  name: install softwares
+  hosts: target2
+  tasks:
+
+    - name: install firewall
+      become: true
+      yum: name=firewalld state=present
+
+    - name: start service firwalld
+      become: true
+      service:
+        name: firewalld
+        state: started
+        enabled: yes  
+
+    - name: configure file with the right port
+      become: true
+      firewalld:
+        port: 3306/tcp
+        permanent: yes
+        zone: public 
+        state: enabled
+
+    - name: restarting firewalld service
+      become: true
+      service:
+        name: firewalld
+        state: reloaded
+
+
+    - name: install httpd
+      become: true
+      yum:
+        name: httpd
+        state: present
+
+    - name: start service of httpd if its not running
+      become: true
+      service:
+        name: httpd
+        state: started
+      
+    - name: enable httpd service without touhcing running state
+      become: true
+      service: name=httpd enabled=yes
+
+    #failing here 
+    - name: install mysql
+      become: true
+      yum:
+        name: mysql-server
+        state: installed
+
+    - name: Install MySQL 5.7 repo
+      become: true 
+      yum: name=http://dev.mysql.com/get/mysql57-community-release-el7-8.noarch.rpm state=present
+
+    - name: Install MySQL 5.7
+      become: true
+      yum: "{{ item }}"
+      with_items:
+      - mysql-community-server
+      - mysql-community-client
+      - MySQL-python
+
+    - name: Start the MySQL service
+      service: 
+        name: mysql-server 
+        state: started 
+        enabled: yes
+
+    - name: create new db
+      become: true
+      service:
+        name: ecomdb
+        state: present

@@ -1,0 +1,1 @@
+target2 ansible_host=52.53.253.126 ansible_ssh_pass=rayhanalam16 ansible_user=cloud_user ansible_connection=ssh
